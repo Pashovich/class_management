@@ -1,5 +1,5 @@
 from models import Class
-
+from utils import clear
 def create_class():
     class_name = input('Class Name: ')
     instructor = input('Instructor Name: ')
@@ -15,19 +15,22 @@ def create_class():
     )
     object_class.save()
     
-    print('Saved')
+    return "Class Saved"
     
 def _get_list(promt_name, show_students = False):
-    classes = get_all_classes(show_students = show_students)
-    print()
-    id = input(f'{promt_name}\n')
+    error_message = ''
+    while True:
+        clear()
+        classes = get_all_classes(show_students = show_students)
+        print()
+        id = input(f'{promt_name + error_message}\n')
 
-    try:
-        class_object = classes[int(id)]
-    except:
-        print('Choosen id not presented in the class.')
-        return None
-    clear()
+        try:
+            class_object = classes[int(id)]
+            break
+        except:
+            error_message = f' Choosen id : {id} not presented in the class.'
+    
     return class_object
 
 def update_class():
@@ -46,10 +49,11 @@ def update_class():
 
     class_object.save()
     clear()
-    print('Updated')
+    return 'Class Updated'
 
 def get_all_classes(show_students = True):
     classes = Class.get_all()
+    print('Classes')
     print(f"{'Classname':<15} {'Instructor':<20} {'Schedule':<15} {'Id':<15}")
     for id, _class in enumerate(classes):
         print(f"{_class.class_name:<15} {_class.instructor:<20} {_class.schedule:<15} {id}")
@@ -75,10 +79,11 @@ def get_all_classes(show_students = True):
                 print('Invalid ID. Wrong id.')
                 continue
 
-
+            print('Students')
             print(f"{'id':<15} {'Student':<20}")
             for id,student in enumerate(_class.students):
                 print(f"{id:<15} {student:<20}")
+            
             break
             
     return classes
@@ -91,6 +96,7 @@ def delete_class():
 
 def enroll_students():
     class_object = _get_list('Choose class id to enroll.', show_students = False)
+    print('Students')
     print(f"{'id':<15} {'Student':<20}")
     for id,student in enumerate(class_object.students):
         print(f"{id:<15} {student:<20}")
@@ -98,8 +104,7 @@ def enroll_students():
     class_object.add_student(student_name)
     class_object.save()
     clear()
-    print('Saved')
-    return 
+    return 'Student Saved'
 
 
 def delete_students():
@@ -129,11 +134,16 @@ def delete_students():
     class_object.delete_student(student_id)
     class_object.save()
     clear()
-    print('Deleted')
+    # print('Deleted')
+    return 'Student Deleted'
+
+def show_classes():
+    get_all_classes()
+    input('Press to continue.')
 
 commands_map = {
     '1' : create_class,
-    '2' : get_all_classes,
+    '2' : show_classes,
     '3' : update_class,
     '4' : delete_class,
     '5' : enroll_students,
