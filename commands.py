@@ -1,9 +1,27 @@
 from models import Class
 from utils import clear
+import re
+
+def validate_schedule(input_string):
+    pattern = r'^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$'
+
+    match = re.match(pattern, input_string)
+
+    if match:
+        day, hours, minutes = match.groups()
+        if 0 <= int(hours) <= 23 and 0 <= int(minutes) <= 59:
+            return True
+
+    return False
+
 def create_class():
     class_name = input('Class Name: ')
     instructor = input('Instructor Name: ')
-    schedule = input('Schedule: Day of the week and time. Monday 10:30: ')
+    while True:
+        schedule = input('Schedule: Day of the week and time. Monday 10:30: ')
+        if validate_schedule(schedule):
+            break
+        print("Wrong Format")
     clear()
     searched_class = Class.get_class(class_name,instructor,schedule)
     if searched_class:
@@ -38,7 +56,13 @@ def update_class():
     print('Provide fields to update:')
     class_name = input('Class Name: (Press enter to skip): ')
     instructor = input('Instructor Name: (Press enter to skip): ')
-    schedule = input('Schedule: Day of the week and time. Monday 10:30 (Press enter to skip): ')
+    while True:
+        schedule = input('Schedule: Day of the week and time. Monday 10:30 (Press enter to skip): ')
+        if not schedule:
+            break
+        if validate_schedule(schedule):
+            break
+        print("Wrong Format")
 
     if class_name:
         class_object.class_name = class_name

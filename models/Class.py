@@ -1,10 +1,5 @@
-
-
-
 class BaseManager:
     db_manager = None
-
-
 
 class Class:
 
